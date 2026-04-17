@@ -115,11 +115,6 @@
           </div>
         </div>
       </div>
-      
-      <!-- Footer -->
-      <div class="captcha-footer">
-        <p></p>
-      </div>
     </div>
   </div>
 </template>
