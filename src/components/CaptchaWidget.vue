@@ -26,41 +26,41 @@
           <div class="logo-area">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" class="logo-img" aria-hidden="true" focusable="false">
               <defs>
-                <linearGradient id="csGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <linearGradient :id="'csGradient-' + _uid" x1="0%" y1="0%" x2="100%" y2="100%">
                   <stop offset="0%" style="stop-color:#1f8fe8;stop-opacity:1" />
                   <stop offset="100%" style="stop-color:#0052a3;stop-opacity:1" />
                 </linearGradient>
-                <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+                <filter :id="'shadow-' + _uid" x="-50%" y="-50%" width="200%" height="200%">
                   <feDropShadow dx="0" dy="3" stdDeviation="4" flood-opacity="0.15"/>
                 </filter>
               </defs>
               
               <!-- Background with subtle pattern -->
-              <rect width="120" height="120" fill="#f8fbff" filter="url(#shadow)"/>
+              <rect width="120" height="120" fill="#f8fbff" :filter="'url(#shadow-' + _uid + ')'"/>
               
               <!-- Corner accent circles -->
-              <circle cx="15" cy="15" r="8" fill="url(#csGradient)" opacity="0.35"/>
-              <circle cx="105" cy="105" r="8" fill="url(#csGradient)" opacity="0.35"/>
-              <circle cx="105" cy="15" r="5" fill="url(#csGradient)" opacity="0.25"/>
-              <circle cx="15" cy="105" r="5" fill="url(#csGradient)" opacity="0.25"/>
+              <circle cx="15" cy="15" r="8" :fill="'url(#csGradient-' + _uid + ')'" opacity="0.35"/>
+              <circle cx="105" cy="105" r="8" :fill="'url(#csGradient-' + _uid + ')'" opacity="0.35"/>
+              <circle cx="105" cy="15" r="5" :fill="'url(#csGradient-' + _uid + ')'" opacity="0.25"/>
+              <circle cx="15" cy="105" r="5" :fill="'url(#csGradient-' + _uid + ')'" opacity="0.25"/>
               
               <!-- Decorative lines -->
-              <line x1="20" y1="35" x2="40" y2="35" stroke="url(#csGradient)" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
-              <line x1="80" y1="35" x2="100" y2="35" stroke="url(#csGradient)" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
-              <line x1="20" y1="90" x2="40" y2="90" stroke="url(#csGradient)" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
-              <line x1="80" y1="90" x2="100" y2="90" stroke="url(#csGradient)" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+              <line x1="20" y1="35" x2="40" y2="35" :stroke="'url(#csGradient-' + _uid + ')'" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+              <line x1="80" y1="35" x2="100" y2="35" :stroke="'url(#csGradient-' + _uid + ')'" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+              <line x1="20" y1="90" x2="40" y2="90" :stroke="'url(#csGradient-' + _uid + ')'" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+              <line x1="80" y1="90" x2="100" y2="90" :stroke="'url(#csGradient-' + _uid + ')'" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
               
               <!-- Dots decoration -->
-              <circle cx="50" cy="28" r="2" fill="url(#csGradient)" opacity="0.7"/>
-              <circle cx="70" cy="28" r="2" fill="url(#csGradient)" opacity="0.7"/>
-              <circle cx="50" cy="97" r="2" fill="url(#csGradient)" opacity="0.7"/>
-              <circle cx="70" cy="97" r="2" fill="url(#csGradient)" opacity="0.7"/>
+              <circle cx="50" cy="28" r="2" :fill="'url(#csGradient-' + _uid + ')'" opacity="0.7"/>
+              <circle cx="70" cy="28" r="2" :fill="'url(#csGradient-' + _uid + ')'" opacity="0.7"/>
+              <circle cx="50" cy="97" r="2" :fill="'url(#csGradient-' + _uid + ')'" opacity="0.7"/>
+              <circle cx="70" cy="97" r="2" :fill="'url(#csGradient-' + _uid + ')'" opacity="0.7"/>
               
               <!-- Main text - CSAM -->
-              <text x="60" y="75" font-size="30" font-weight="800" text-anchor="middle" fill="url(#csGradient)" font-family="'Segoe UI', -apple-system, sans-serif" letter-spacing="1">CSAM</text>
+              <text x="60" y="75" font-size="30" font-weight="800" text-anchor="middle" :fill="'url(#csGradient-' + _uid + ')'" font-family="'Segoe UI', -apple-system, sans-serif" letter-spacing="1">CSAM</text>
               
               <!-- Bottom accent bar -->
-              <rect x="30" y="85" width="60" height="3" fill="url(#csGradient)" opacity="0.8" rx="1.5"/>
+              <rect x="30" y="85" width="60" height="3" :fill="'url(#csGradient-' + _uid + ')'" opacity="0.8" rx="1.5"/>
             </svg>
           </div>
         </div>
