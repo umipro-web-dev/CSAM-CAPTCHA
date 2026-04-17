@@ -21,7 +21,7 @@
             <label for="captcha-checkbox" class="main-label">
               普通科ではありません
             </label>
-            <p class="sub-text">H-CAPTCHA</p>
+            <p class="sub-text">CSAM-CAPTCHA</p>
           </div>
           <div class="logo-area">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" class="logo-img" aria-hidden="true" focusable="false">
