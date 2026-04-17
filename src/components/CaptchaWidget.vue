@@ -114,8 +114,6 @@
             <p class="success-sub">あなたは、理数科もしくは理数科と同等の学力を有していると認定されました！</p>
           </div>
         </div>
-
-        <div class="captcha-footer"></div>
       </div>
     </div>
   </div>
