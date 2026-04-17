@@ -24,7 +24,7 @@
             <p class="sub-text">H-CAPTCHA</p>
           </div>
           <div class="logo-area">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" class="logo-img">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" class="logo-img" aria-hidden="true" focusable="false">
               <defs>
                 <linearGradient id="csGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                   <stop offset="0%" style="stop-color:#1f8fe8;stop-opacity:1" />
