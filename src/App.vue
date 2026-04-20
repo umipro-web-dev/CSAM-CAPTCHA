@@ -15,7 +15,7 @@
 
 p {
   color: white;
-  font-size:10vw;
+  font-size:6vw;
   font-weight: bold;
 }
 </style>
