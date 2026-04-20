@@ -1,5 +1,6 @@
 <template>
   <div class="app-container">
+    <p>公開までしばらくお待ちください</p>
   </div>
 </template>
 
