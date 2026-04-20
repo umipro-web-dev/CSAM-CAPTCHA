@@ -12,4 +12,10 @@
   padding: 20px;
   min-height: 100vh;
 }
+
+p {
+  color: white;
+  font-size:10vw;
+  font-weight: bold;
+}
 </style>
