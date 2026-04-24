@@ -363,13 +363,14 @@ const resetCaptcha = () => {
   gap: 2vh;
   padding: 4vh;
   min-height: 30vh;
+  min-width: 250px;
 }
 
 .spinner {
-  width: 5vw;
-  height: 5vw;
-  min-width: 36px;
+  width: 10vw;
+  height: 10vw;
   max-width: 60px;
+  max-height: 60px;
   border: 3px solid #f0f0f0;
   border-top-color: #1f8fe8;
   border-radius: 50%;
