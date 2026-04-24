@@ -1,121 +1,63 @@
 <template>
-  <div class="captcha-widget">
-    <div class="captcha-container">
-      <div class="captcha-box">
-        <!-- Main Section -->
-        <div v-if="!showChallenge && !verified" class="main-section">
-          <div class="checkbox-large">
-            <div v-if="!loading" class="checkbox-wrapper">
-              <input 
-                type="checkbox" 
-                id="captcha-checkbox"
-                v-model="isChecked"
-                @change="handleCheck"
-              >
-            </div>
-            <div v-else class="checkbox-spinner">
-              <div class="spinner-checkbox"></div>
-            </div>
-          </div>
-          <div class="main-text-area">
-            <label for="captcha-checkbox" class="main-label">
-              普通科ではありません
-            </label>
-            <p class="sub-text">CSAM-CAPTCHA</p>
-          </div>
-          <div class="logo-area">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" class="logo-img" aria-hidden="true" focusable="false">
-              <defs>
-                <linearGradient :id="'csGradient-' + _uid" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" style="stop-color:#1f8fe8;stop-opacity:1" />
-                  <stop offset="100%" style="stop-color:#0052a3;stop-opacity:1" />
-                </linearGradient>
-                <filter :id="'shadow-' + _uid" x="-50%" y="-50%" width="200%" height="200%">
-                  <feDropShadow dx="0" dy="3" stdDeviation="4" flood-opacity="0.15"/>
-                </filter>
-              </defs>
-              
-              <!-- Background with subtle pattern -->
-              <rect width="120" height="120" fill="#f8fbff" :filter="'url(#shadow-' + _uid + ')'"/>
-              
-              <!-- Corner accent circles -->
-              <circle cx="15" cy="15" r="8" :fill="'url(#csGradient-' + _uid + ')'" opacity="0.35"/>
-              <circle cx="105" cy="105" r="8" :fill="'url(#csGradient-' + _uid + ')'" opacity="0.35"/>
-              <circle cx="105" cy="15" r="5" :fill="'url(#csGradient-' + _uid + ')'" opacity="0.25"/>
-              <circle cx="15" cy="105" r="5" :fill="'url(#csGradient-' + _uid + ')'" opacity="0.25"/>
-              
-              <!-- Decorative lines -->
-              <line x1="20" y1="35" x2="40" y2="35" :stroke="'url(#csGradient-' + _uid + ')'" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
-              <line x1="80" y1="35" x2="100" y2="35" :stroke="'url(#csGradient-' + _uid + ')'" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
-              <line x1="20" y1="90" x2="40" y2="90" :stroke="'url(#csGradient-' + _uid + ')'" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
-              <line x1="80" y1="90" x2="100" y2="90" :stroke="'url(#csGradient-' + _uid + ')'" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
-              
-              <!-- Dots decoration -->
-              <circle cx="50" cy="28" r="2" :fill="'url(#csGradient-' + _uid + ')'" opacity="0.7"/>
-              <circle cx="70" cy="28" r="2" :fill="'url(#csGradient-' + _uid + ')'" opacity="0.7"/>
-              <circle cx="50" cy="97" r="2" :fill="'url(#csGradient-' + _uid + ')'" opacity="0.7"/>
-              <circle cx="70" cy="97" r="2" :fill="'url(#csGradient-' + _uid + ')'" opacity="0.7"/>
-              
-              <!-- Main text - CSAM -->
-              <text x="60" y="75" font-size="30" font-weight="800" text-anchor="middle" :fill="'url(#csGradient-' + _uid + ')'" font-family="'Segoe UI', -apple-system, sans-serif" letter-spacing="1">CSAM</text>
-              
-              <!-- Bottom accent bar -->
-              <rect x="30" y="85" width="60" height="3" :fill="'url(#csGradient-' + _uid + ')'" opacity="0.8" rx="1.5"/>
-            </svg>
-          </div>
-        </div>
+  <!-- Verification Before: Main Section -->
+  <div v-if="!loading && !showChallenge && !verified" class="captcha-widget first-section" id="before-verification">
+    <div class="checkbox-large">
+      <div class="checkbox-wrapper">
+        <input type="checkbox" id="captcha-checkbox" v-model="isChecked" @change="handleCheck">
+      </div>
+    </div>
+    <div class="main-text-area">
+      <label for="captcha-checkbox" class="main-label">
+        私は3-Hです
+      </label>
+      <p class="sub-text">CSAM-CAPTCHA</p>
+    </div>
+  </div>
 
-        <!-- Loading Section -->
-        <div v-else-if="loading && !verified" class="loading-section">
-          <div class="spinner"></div>
-          <p>検証中...</p>
-        </div>
+  <!-- Verification In Progress: Loading Section -->
+  <div v-else-if="loading && !showChallenge && !verified" class="captcha-widget loading-section">
+    <div class="spinner"></div>
+    <p>検証中...</p>
+  </div>
 
-        <!-- Challenge Section -->
-        <div v-else-if="showChallenge && !verified" class="challenge-section">
-          <div class="challenge-header">
-            <h3>{{ currentChallenge.prompt }}</h3>
-            <button class="close-btn" @click="resetCaptcha">✕</button>
-          </div>
+  <!-- Verification In Progress: Challenge Section -->
+  <div v-else-if="showChallenge && !verified" class="captcha-widget challenge-section" id="challenge-section">
+    <div class="challenge-header">
+      <h3>{{ currentChallenge.prompt }}</h3>
+      <button class="close-btn" @click="resetCaptcha">✕</button>
+    </div>
 
-          <div class="challenge-instruction">
-            <p>{{ currentChallenge.instruction }}</p>
-          </div>
+    <div class="challenge-instruction">
+      <p>{{ currentChallenge.instruction }}</p>
+    </div>
 
-          <div class="image-grid-large">
-            <div
-              v-for="(image, index) in currentChallenge.images"
-              :key="index"
-              class="image-item-large"
-              :class="{ selected: selectedImages.includes(index) }"
-              @click="toggleImage(index)"
-            >
-              <div class="image-display">
-                <img :src="image.src" :alt="image.alt" class="image-file" />
-              </div>
-            </div>
-          </div>
-
-          <div class="challenge-actions">
-            <button class="btn-skip" @click="skipChallenge">スキップ</button>
-            <button class="btn-verify" @click="verifyChallenge">確認</button>
-          </div>
-
-          <div v-if="error" class="error-message">
-            ⚠️ {{ error }}
-          </div>
-        </div>
-
-        <!-- Success Section -->
-        <div v-else-if="verified" class="success-section">
-          <div class="success-icon">✓</div>
-          <div class="success-text">
-            <p class="success-title">おめでとうございます！</p>
-            <p class="success-sub">あなたは、理数科もしくは理数科と同等の学力を有していると認定されました！</p>
-          </div>
+    <div class="image-grid-large">
+      <div v-for="(image, index) in currentChallenge.images" :key="index" class="image-item-large"
+        :class="{ selected: selectedImages.includes(index) }" @click="toggleImage(index)">
+        <div class="image-display">
+          <img :src="image.src" :alt="image.alt" class="image-file" />
         </div>
       </div>
     </div>
+
+    <div class="challenge-actions">
+      <button class="btn-skip" @click="skipChallenge">スキップ</button>
+      <button class="btn-verify" @click="verifyChallenge">確認</button>
+    </div>
+
+    <div v-if="error" class="error-message">
+      ⚠️ {{ error }}
+    </div>
+  </div>
+
+  <!-- Verification Complete: Success Section -->
+  <div v-else-if="verified" class="captcha-widget success-section" id="success-section">
+    <div class="success-icon">✓</div>
+    <div class="success-text">
+      <p class="success-title">検証成功！</p>
+      <p class="success-sub">あなたは今日から3-Hの仲間入りです！</p>
+    </div>
+    <button class="btn-verify" @click="resetCaptcha">もう一度プレイする</button>
   </div>
 </template>
 
@@ -131,61 +73,111 @@ const loading = ref(false)
 const selectedImages = ref([])
 const error = ref('')
 
-// 画像ファイル情報を定義
-const correctImages = [
+// 問題1の画像ファイル情報を定義
+const correctImages1 = [
   'a.png', 'b.png', 'c.png', 'd.png', 'e.png', 'f.png', 'g.png', 'h.png'
 ]
 
-const wrongImages = [
+const wrongImages1 = [
   'a.png', 'b.png', 'c.png', 'd.png', 'e.png', 'f.png', 'g.png', 'h.png',
   'i.png', 'j.png', 'k.png', 'l.png', 'm.png', 'n.png', 'o.png', 'p.png',
   'q.png', 'r.png', 's.png', 't.png'
 ]
 
+// 問題2の画像ファイル情報を定義
+const correctImages2 = [
+  'a.png', 'b.png', 'c.png', 'd.png', 'e.png', 'f.png', 'g.png', 'h.png'
+]
+
+const wrongImages2 = [
+  'a.png', 'b.png', 'c.png', 'd.png', 'e.png', 'f.png', 'g.png', 'h.png',
+  'i.png', 'j.png', 'k.png', 'l.png', 'm.png', 'n.png', 'o.png', 'p.png',
+  'q.png', 'r.png', 's.png', 't.png'
+]
+
+// 問題3の画像ファイル情報を定義
+const correctImages3 = [
+  'a.png', 'b.png', 'c.png', 'd.png', 'e.png', 'f.png', 'g.png', 'h.png'
+]
+
+const wrongImages3 = [
+  'a.png', 'b.png', 'c.png', 'd.png', 'e.png', 'f.png', 'g.png', 'h.png',
+  'i.png', 'j.png', 'k.png', 'l.png', 'm.png', 'n.png', 'o.png', 'p.png',
+  'q.png', 'r.png', 's.png', 't.png'
+]
+
+const problems = [
+  {
+    prompt: '1はどれか？',
+    instruction: '数字の1を含む画像をすべてクリックしてください①',
+    basePath: '/images/problem1',
+    correctImages: correctImages1,
+    wrongImages: wrongImages1
+  },
+  {
+    prompt: '1はどれか？',
+    instruction: '数字の1を含む画像をすべてクリックしてください②',
+    basePath: '/images/problem2',
+    correctImages: correctImages2,
+    wrongImages: wrongImages2
+  },
+  {
+    prompt: '1はどれか？',
+    instruction: '数字の1を含む画像をすべてクリックしてください③',
+    basePath: '/images/problem3',
+    correctImages: correctImages3,
+    wrongImages: wrongImages3
+  }
+]
+
 const generateChallenge = () => {
+  // ランダムに問題を選択
+  const problemIndex = Math.floor(Math.random() * problems.length)
+  const currentProblem = problems[problemIndex]
+
   // 正解の数をランダムに生成（1～3）
   const correctCount = Math.floor(Math.random() * 3) + 1
-  
-  // 正解画像をランダムに選択（correctImgsから）
+
+  // 正解画像をランダムに選択
   const selectedCorrectImages = []
-  const tempCorrectImages = [...correctImages]
+  const tempCorrectImages = [...currentProblem.correctImages]
   for (let i = 0; i < correctCount; i++) {
     const randomIdx = Math.floor(Math.random() * tempCorrectImages.length)
     selectedCorrectImages.push(tempCorrectImages[randomIdx])
     tempCorrectImages.splice(randomIdx, 1)
   }
-  
-  // 不正解画像を選択（wrongImgsから9-correctCount個）
+
+  // 不正解画像を選択（9-correctCount個）
   const selectedWrongImages = []
-  const tempWrongImages = [...wrongImages]
+  const tempWrongImages = [...currentProblem.wrongImages]
   const wrongCount = 9 - correctCount
-  
+
   for (let i = 0; i < wrongCount; i++) {
     const randomIdx = Math.floor(Math.random() * tempWrongImages.length)
     selectedWrongImages.push(tempWrongImages[randomIdx])
     tempWrongImages.splice(randomIdx, 1)
   }
-  
+
   // 正解と不正解を組み合わせ
   const images = [
     ...selectedCorrectImages.map(filename => ({ filename, isCorrect: true })),
     ...selectedWrongImages.map(filename => ({ filename, isCorrect: false }))
   ]
-  
+
   // シャッフル
   images.sort(() => Math.random() - 0.5)
-  
+
   // 正解のインデックスを取得
   const correctIndices = images
     .map((img, idx) => img.isCorrect ? idx : -1)
     .filter(idx => idx !== -1)
-  
+
   return {
-    prompt: '1はどれか？',
-    instruction: '数字の1を含む画像をすべてクリックしてください',
+    prompt: currentProblem.prompt,
+    instruction: currentProblem.instruction,
     images: images.map(img => ({
-      src: `/images/${img.isCorrect ? 'correctImgs' : 'wrongImgs'}/${img.filename}`,
-      alt: img.isCorrect ? 'correct' : 'wrong'
+      src: `${currentProblem.basePath}/${img.isCorrect ? 'correctImgs' : 'wrongImgs'}/${img.filename}`,
+      alt: "inspection_image"
     })),
     correctIndices
   }
@@ -219,11 +211,11 @@ const toggleImage = (index) => {
 const verifyChallenge = () => {
   const correctIndices = currentChallenge.value.correctIndices.sort((a, b) => a - b)
   const selected = selectedImages.value.sort((a, b) => a - b)
-  
-  const isCorrect = 
+
+  const isCorrect =
     correctIndices.length === selected.length &&
     correctIndices.every((val, idx) => val === selected[idx])
-  
+
   if (!isCorrect) {
     error.value = '選択が正しくありません。もう一度試してください。'
     setTimeout(() => {
@@ -231,7 +223,7 @@ const verifyChallenge = () => {
     }, 3000)
     return
   }
-  
+
   verified.value = true
   emit('verified', true)
   setTimeout(() => {
@@ -259,29 +251,27 @@ const resetCaptcha = () => {
 <style scoped>
 .captcha-widget {
   margin: 0;
-  padding: 20px;
+  padding: 2vh;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
-
-.captcha-container {
-  width: 100%;
-  max-width: 600px;
-}
-
-.captcha-box {
+  margin-left: auto;
+  margin-right: auto;
   background: white;
   border: 1px solid #9e9e9e;
   border-radius: 2px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 0.2vh 1vh rgba(0, 0, 0, 0.12);
 }
 
-/* Main Section */
-.main-section {
+/* First Section */
+.first-section {
   display: flex;
+  justify-content: flex-start;
   align-items: center;
-  gap: 30px;
-  padding: 40px 50px;
-  min-height: 180px;
+  gap: 4vw;
+  padding: 4vh 5vw;
+  min-height: auto;
+  width: 85%;
+  height: 150px;
+  max-width: 600px;
 }
 
 .checkbox-large {
@@ -289,58 +279,74 @@ const resetCaptcha = () => {
 }
 
 .checkbox-wrapper {
-  width: 48px;
-  height: 48px;
+  width: 6vw;
+  height: 6vw;
+  min-width: 44px;
+  min-height: 44px;
+  max-width: 60px;
+  max-height: 60px;
 }
 
 .checkbox-large input[type="checkbox"] {
-  width: 48px;
-  height: 48px;
+  width: 100%;
+  height: 100%;
   cursor: pointer;
   accent-color: #1f8fe8;
 }
 
 .checkbox-spinner {
-  width: 48px;
-  height: 48px;
+  width: 6vw;
+  height: 6vw;
+  min-width: 44px;
+  min-height: 44px;
+  max-width: 60px;
+  max-height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .spinner-checkbox {
-  width: 48px;
-  height: 48px;
-  border: 4px solid #e8e8e8;
+  width: 100%;
+  height: 100%;
+  border: 3px solid #e8e8e8;
   border-top-color: #1f8fe8;
   border-radius: 50%;
   animation: spin 1s linear infinite;
+  box-sizing: border-box;
 }
 
 .main-text-area {
-  flex: 1;
+  width: fit-content;
 }
 
 .main-label {
   display: block;
-  font-size: 28px;
+  font-size: 1.5em;
   font-weight: 500;
   color: #333;
-  margin-bottom: 6px;
+  margin-bottom: 0.5vh;
   cursor: pointer;
   user-select: none;
+  line-height: 1.3;
+  width: fit-content;
 }
 
 .sub-text {
   margin: 0;
-  font-size: 15px;
+  font-size: clamp(12px, 2vw, 15px);
   color: #999;
+  display: block;
+  width: fit-content;
 }
 
 .logo-area {
   flex-shrink: 0;
-  width: 80px;
-  height: 80px;
+  width: 10vw;
+  height: 10vw;
+  min-width: 56px;
+  max-width: 100px;
+  display: none;
 }
 
 .logo-img {
@@ -354,80 +360,105 @@ const resetCaptcha = () => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 15px;
-  padding: 40px;
-  min-height: 200px;
+  gap: 2vh;
+  padding: 4vh;
+  min-height: 30vh;
+  min-width: 250px;
 }
 
 .spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid #f0f0f0;
+  width: 10vw;
+  height: 10vw;
+  max-width: 60px;
+  max-height: 60px;
+  border: 3px solid #f0f0f0;
   border-top-color: #1f8fe8;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
+  box-sizing: border-box;
 }
 
 .loading-section p {
   margin: 0;
-  font-size: 15px;
+  font-size: clamp(13px, 2vw, 15px);
   color: #666;
 }
 
 /* Challenge Section */
 .challenge-section {
-  padding: 40px;
+  padding: 3vh;
+  width: 85%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 2vh;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .challenge-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 25px;
+  align-items: flex-start;
+  gap: 1.5vw;
+  flex-shrink: 0;
 }
 
 .challenge-header h3 {
   margin: 0;
-  font-size: 18px;
+  font-size: clamp(16px, 5vw, 18px);
   font-weight: 600;
   color: #333;
+  line-height: 1.4;
 }
 
 .close-btn {
   background: none;
   border: none;
-  font-size: 20px;
+  font-size: clamp(18px, 4vw, 24px);
   color: #999;
   cursor: pointer;
-  padding: 4px 8px;
+  padding: 0.5vh 0.8vw;
+  min-width: 40px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: color 0.2s;
+  flex-shrink: 0;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
 }
 
-.close-btn:hover {
+.close-btn:hover,
+.close-btn:active {
   color: #333;
 }
 
 .challenge-instruction {
   text-align: center;
-  margin-bottom: 25px;
+  flex-shrink: 0;
 }
 
 .challenge-instruction p {
   margin: 0;
-  font-size: 14px;
+  font-size: clamp(13px, 3vw, 14px);
   color: #666;
+  line-height: 1.5;
 }
 
 .image-grid-large {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin-bottom: 30px;
+  gap: clamp(8px, 2vw, 15px);
+  flex: 1;
+  min-height: 0;
+  aspect-ratio: 1;
 }
 
 .image-item-large {
   aspect-ratio: 1;
-  border: 4px solid #d3d3d3;
+  border: clamp(2px, 0.5vw, 4px) solid #d3d3d3;
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s;
@@ -437,23 +468,26 @@ const resetCaptcha = () => {
   justify-content: center;
   overflow: hidden;
   position: relative;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  box-sizing: border-box;
 }
 
-.image-item-large:hover {
-  border-color: #999;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+.image-item-large:active {
+  border-color: #1f8fe8;
+  background: #e8f4fb;
 }
 
 .image-item-large.selected {
   border-color: #1f8fe8;
   background: #e8f4fb;
-  box-shadow: 0 0 0 3px rgba(31, 143, 232, 0.2);
+  box-shadow: 0 0 0 clamp(2px, 0.5vw, 3px) rgba(31, 143, 232, 0.2);
 }
 
 .image-item-large.selected::after {
   content: '✓';
   position: absolute;
-  font-size: 40px;
+  font-size: clamp(24px, 6vw, 40px);
   color: #1f8fe8;
   font-weight: bold;
 }
@@ -468,7 +502,7 @@ const resetCaptcha = () => {
 }
 
 .image-icon-large {
-  font-size: 64px;
+  font-size: clamp(48px, 12vw, 64px);
 }
 
 .image-file {
@@ -479,24 +513,34 @@ const resetCaptcha = () => {
 
 .challenge-actions {
   display: flex;
-  gap: 12px;
+  gap: 1.5vw;
   justify-content: flex-end;
+  flex-wrap: wrap;
+  flex-shrink: 0;
 }
 
 .btn-skip,
 .btn-verify {
-  padding: 10px 24px;
+  padding: clamp(10px, 1.5vh, 14px) clamp(16px, 3vw, 24px);
   border: 1px solid #d3d3d3;
-  border-radius: 2px;
-  font-size: 14px;
+  border-radius: 7px;
+  font-size: clamp(12px, 2vw, 14px);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
   background: white;
   color: #1f8fe8;
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  box-sizing: border-box;
 }
 
-.btn-skip:hover {
+.btn-skip:active {
   border-color: #999;
   background: #f9f9f9;
 }
@@ -507,21 +551,23 @@ const resetCaptcha = () => {
   color: white;
 }
 
-.btn-verify:hover {
+.btn-verify:active {
   background: #1676c9;
   border-color: #1676c9;
 }
 
 .error-message {
-  margin-top: 15px;
-  padding: 12px;
+  margin-top: 1.5vh;
+  padding: 1.5vh;
   background: #ffebee;
   border: 1px solid #ffcdd2;
   border-radius: 3px;
   color: #c62828;
-  font-size: 13px;
+  font-size: clamp(11px, 1.8vw, 13px);
   text-align: center;
   animation: shake 0.5s ease;
+  line-height: 1.4;
+  flex-shrink: 0;
 }
 
 /* Success Section */
@@ -529,14 +575,14 @@ const resetCaptcha = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 20px;
-  padding: 40px;
-  min-height: 140px;
+  gap: 2vh;
+  padding: 4vh;
+  min-height: 25vh;
   flex-direction: column;
 }
 
 .success-icon {
-  font-size: 48px;
+  font-size: clamp(32px, 8vw, 48px);
   color: #1f8fe8;
   font-weight: bold;
 }
@@ -547,22 +593,24 @@ const resetCaptcha = () => {
 
 .success-title {
   margin: 0;
-  font-size: 18px;
+  font-size: clamp(15px, 3vw, 18px);
   font-weight: 600;
   color: #333;
+  line-height: 1.4;
 }
 
 .success-sub {
-  margin: 4px 0 0 0;
-  font-size: 13px;
+  margin: 0.5vh 0 0 0;
+  font-size: clamp(11px, 2vw, 13px);
   color: #5e5e5e;
+  line-height: 1.5;
 }
 
 /* Footer */
 .captcha-footer {
   text-align: center;
-  padding: 15px;
-  font-size: 12px;
+  padding: 1.5vh;
+  font-size: clamp(10px, 1.5vw, 12px);
   color: #999;
 }
 
@@ -577,34 +625,40 @@ const resetCaptcha = () => {
 }
 
 @keyframes shake {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateX(0);
   }
+
   25% {
-    transform: translateX(-8px);
+    transform: translateX(-0.8vh);
   }
+
   75% {
-    transform: translateX(8px);
+    transform: translateX(0.8vh);
   }
 }
 
-@media (max-width: 600px) {
-  .main-section {
-    flex-direction: column;
-    padding: 20px;
-    gap: 15px;
+/* Tablet and Large Screens */
+@media (min-width: 768px) {
+  .logo-area {
+    display: block;
   }
 
-  .main-label {
-    font-size: 18px;
+  .btn-skip:hover {
+    border-color: #999;
+    background: #f9f9f9;
   }
 
-  .image-grid-large {
-    grid-template-columns: repeat(2, 1fr);
+  .btn-verify:hover {
+    background: #1676c9;
+    border-color: #1676c9;
   }
 
-  .image-icon-large {
-    font-size: 40px;
+  .image-item-large:hover {
+    border-color: #999;
+    box-shadow: 0 0.2vh 0.8vh rgba(0, 0, 0, 0.1);
   }
 }
 </style>
