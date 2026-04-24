@@ -13,7 +13,7 @@ import CaptchaWidget from './components/CaptchaWidget.vue'
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
-  min-height: 100vh;
+  width: 100%;
+  height: 100%;
 }
 </style>
