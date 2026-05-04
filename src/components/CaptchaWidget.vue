@@ -27,6 +27,13 @@
       <button class="close-btn" @click="resetCaptcha">✕</button>
     </div>
 
+    <div class="progress-bar-container">
+      <div class="progress-bar">
+        <div class="progress-fill" :style="{ width: ((currentProblemIndex + 1) / problems.length * 100) + '%' }"></div>
+      </div>
+      <p class="progress-text">{{ currentProblemIndex + 1 }} / {{ problems.length }}</p>
+    </div>
+
     <div class="challenge-instruction">
       <p>{{ currentChallenge.instruction }}</p>
     </div>
@@ -72,16 +79,15 @@ const verified = ref(false)
 const loading = ref(false)
 const selectedImages = ref([])
 const error = ref('')
+const currentProblemIndex = ref(0)
 
 // 問題1の画像ファイル情報を定義
 const correctImages1 = [
-  'a.png', 'b.png', 'c.png', 'd.png', 'e.png', 'f.png', 'g.png', 'h.png'
+  'a.jpg', 'b.jpg', 'c.jpg', 'd.jpg', 'e.jpg', 'f.jpg'
 ]
 
 const wrongImages1 = [
-  'a.png', 'b.png', 'c.png', 'd.png', 'e.png', 'f.png', 'g.png', 'h.png',
-  'i.png', 'j.png', 'k.png', 'l.png', 'm.png', 'n.png', 'o.png', 'p.png',
-  'q.png', 'r.png', 's.png', 't.png'
+  'a.jpg', 'b.jpg', 'c.jpg', 'd.jpg', 'e.jpg', 'f.jpg'
 ]
 
 // 問題2の画像ファイル情報を定義
@@ -108,8 +114,8 @@ const wrongImages3 = [
 
 const problems = [
   {
-    prompt: '1はどれか？',
-    instruction: '数字の1を含む画像をすべてクリックしてください①',
+    prompt: '3-Hに当てはまるのは？',
+    instruction: '3-H全体に当てはまるものをもれなく選択してください',
     basePath: '/images/problem1',
     correctImages: correctImages1,
     wrongImages: wrongImages1
@@ -130,13 +136,12 @@ const problems = [
   }
 ]
 
-const generateChallenge = () => {
-  // ランダムに問題を選択
-  const problemIndex = Math.floor(Math.random() * problems.length)
-  const currentProblem = problems[problemIndex]
+const generateChallenge = (problemIdx = currentProblemIndex.value) => {
+  // 指定された問題を使用
+  const currentProblem = problems[problemIdx]
 
-  // 正解の数をランダムに生成（1～3）
-  const correctCount = Math.floor(Math.random() * 3) + 1
+  // 正解の数をランダムに生成（3～6）
+  const correctCount = Math.floor(Math.random() * 4) + 3
 
   // 正解画像をランダムに選択
   const selectedCorrectImages = []
@@ -224,11 +229,21 @@ const verifyChallenge = () => {
     return
   }
 
-  verified.value = true
-  emit('verified', true)
-  setTimeout(() => {
-    showChallenge.value = false
-  }, 1500)
+  // 正解した場合
+  if (currentProblemIndex.value < problems.length - 1) {
+    // 次の問題がある場合
+    currentProblemIndex.value++
+    currentChallenge.value = generateChallenge()
+    selectedImages.value = []
+    error.value = ''
+  } else {
+    // すべての問題が完了した場合
+    verified.value = true
+    emit('verified', true)
+    setTimeout(() => {
+      showChallenge.value = false
+    }, 1500)
+  }
 }
 
 const skipChallenge = () => {
@@ -244,6 +259,8 @@ const resetCaptcha = () => {
   verified.value = false
   loading.value = false
   selectedImages.value = []
+  currentProblemIndex.value = 0
+  currentChallenge.value = generateChallenge()
   emit('verified', false)
 }
 </script>
@@ -433,6 +450,33 @@ const resetCaptcha = () => {
 .close-btn:hover,
 .close-btn:active {
   color: #333;
+}
+
+.progress-bar-container {
+  flex-shrink: 0;
+  margin-bottom: 1.5vh;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background: #e8e8e8;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 0.8vh;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #1f8fe8;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  text-align: center;
+  font-size: clamp(11px, 1.8vw, 12px);
+  color: #666;
+  margin: 0;
 }
 
 .challenge-instruction {
