@@ -12,6 +12,9 @@
       </label>
       <p class="sub-text">CSAM-CAPTCHA</p>
     </div>
+    <div class="logo-area">
+      <img src="/images/image.png" alt="Logo" class="logo-img" />
+    </div>
   </div>
 
   <!-- Verification In Progress: Loading Section -->
@@ -62,7 +65,7 @@
     <div class="success-icon">✓</div>
     <div class="success-text">
       <p class="success-title">検証成功！</p>
-      <p class="success-sub">あなたは今日から3-Hの仲間入りです！</p>
+      <p class="success-sub">おめでとう！あなたは今日から3-Hの仲間入りです！</p>
     </div>
     <button class="btn-verify" @click="resetCaptcha">もう一度プレイする</button>
   </div>
@@ -83,11 +86,11 @@ const currentProblemIndex = ref(0)
 
 // 問題1の画像ファイル情報を定義
 const correctImages1 = [
-  'a.jpg', 'b.jpg', 'c.jpg', 'd.jpg', 'e.jpg', 'f.jpg'
+  'a.jpg', 'b.jpg', 'c.jpg', 'd.jpg', 'e.jpg', 'f.jpg', 'g.jpg', 'h.jpg', 'i.jpg'
 ]
 
 const wrongImages1 = [
-  'a.jpg', 'b.jpg', 'c.jpg', 'd.jpg', 'e.jpg', 'f.jpg'
+  'c.jpg', 'e.jpg', 'f.jpg'
 ]
 
 // 問題2の画像ファイル情報を定義
@@ -101,16 +104,8 @@ const wrongImages2 = [
   'q.png', 'r.png', 's.png', 't.png'
 ]
 
-// 問題3の画像ファイル情報を定義
-const correctImages3 = [
-  'a.png', 'b.png', 'c.png', 'd.png', 'e.png', 'f.png', 'g.png', 'h.png'
-]
-
-const wrongImages3 = [
-  'a.png', 'b.png', 'c.png', 'd.png', 'e.png', 'f.png', 'g.png', 'h.png',
-  'i.png', 'j.png', 'k.png', 'l.png', 'm.png', 'n.png', 'o.png', 'p.png',
-  'q.png', 'r.png', 's.png', 't.png'
-]
+// problem2を表示するかどうかを制御する変数
+const showProblem2 = false
 
 const problems = [
   {
@@ -118,30 +113,27 @@ const problems = [
     instruction: '3-H全体に当てはまるものをもれなく選択してください',
     basePath: '/images/problem1',
     correctImages: correctImages1,
-    wrongImages: wrongImages1
+    wrongImages: wrongImages1,
+    correctCount: { min: 9, max: 9 },
+    totalImages: 9
   },
-  {
+  ...(showProblem2 ? [{
     prompt: '1はどれか？',
     instruction: '数字の1を含む画像をすべてクリックしてください②',
     basePath: '/images/problem2',
     correctImages: correctImages2,
-    wrongImages: wrongImages2
-  },
-  {
-    prompt: '1はどれか？',
-    instruction: '数字の1を含む画像をすべてクリックしてください③',
-    basePath: '/images/problem3',
-    correctImages: correctImages3,
-    wrongImages: wrongImages3
-  }
+    wrongImages: wrongImages2,
+    correctCount: { min: 2, max: 5 },
+    totalImages: 9
+  }] : [])
 ]
 
 const generateChallenge = (problemIdx = currentProblemIndex.value) => {
   // 指定された問題を使用
   const currentProblem = problems[problemIdx]
 
-  // 正解の数をランダムに生成（3～6）
-  const correctCount = Math.floor(Math.random() * 4) + 3
+  // 正解の数をランダムに生成（問題ごとの設定を使用）
+  const correctCount = Math.floor(Math.random() * (currentProblem.correctCount.max - currentProblem.correctCount.min + 1)) + currentProblem.correctCount.min
 
   // 正解画像をランダムに選択
   const selectedCorrectImages = []
@@ -152,10 +144,10 @@ const generateChallenge = (problemIdx = currentProblemIndex.value) => {
     tempCorrectImages.splice(randomIdx, 1)
   }
 
-  // 不正解画像を選択（9-correctCount個）
+  // 不正解画像を選択（totalImages-correctCount個）
   const selectedWrongImages = []
   const tempWrongImages = [...currentProblem.wrongImages]
-  const wrongCount = 9 - correctCount
+  const wrongCount = currentProblem.totalImages - correctCount
 
   for (let i = 0; i < wrongCount; i++) {
     const randomIdx = Math.floor(Math.random() * tempWrongImages.length)
@@ -339,7 +331,7 @@ const resetCaptcha = () => {
 
 .main-label {
   display: block;
-  font-size: 1.5em;
+  font-size: 1.6em;
   font-weight: 500;
   color: #333;
   margin-bottom: 0.5vh;
@@ -359,15 +351,16 @@ const resetCaptcha = () => {
 
 .logo-area {
   flex-shrink: 0;
-  width: 10vw;
-  height: 10vw;
-  min-width: 56px;
+  width: 110%;
+  height: 110%;
+  min-width: 100px;
   max-width: 100px;
-  display: none;
+  display: none !important;
+  align-items: center;
+  justify-content: center;
 }
 
 .logo-img {
-  width: 100%;
   height: 100%;
 }
 
