@@ -62,12 +62,10 @@
 
   <!-- Verification Complete: Success Section -->
   <div v-else-if="verified" class="captcha-widget success-section" id="success-section">
-    <div class="success-icon">✓</div>
-    <div class="success-text">
-      <p class="success-title">検証成功！</p>
-      <p class="success-sub">おめでとう！あなたは今日から3-Hの仲間入りです！</p>
+    <div class="success-overlay-text">
+      おめでとうございます！<wbr>あなたは3-Hです！でも...
     </div>
-    <button class="btn-verify" @click="resetCaptcha">もう一度プレイする</button>
+    <button class="btn-back" @click="resetCaptcha">もう一度プレイする</button>
   </div>
 </template>
 
@@ -95,17 +93,17 @@ const wrongImages1 = [
 
 // 問題2の画像ファイル情報を定義
 const correctImages2 = [
-  'a.png', 'b.png', 'c.png', 'd.png', 'e.png', 'f.png', 'g.png', 'h.png'
+  'math6.jpg', 'math2.jpg', 'new_nested_abs.png',
+  'math4.jpg', 'product.jpg', 'integral.jpg'
 ]
 
 const wrongImages2 = [
-  'a.png', 'b.png', 'c.png', 'd.png', 'e.png', 'f.png', 'g.png', 'h.png',
-  'i.png', 'j.png', 'k.png', 'l.png', 'm.png', 'n.png', 'o.png', 'p.png',
-  'q.png', 'r.png', 's.png', 't.png'
+  'complex_limit.jpg', 'math3.jpg', 'math5.jpg',
+  'math1.jpg', 'theta_square.jpg'
 ]
 
 // problem2を表示するかどうかを制御する変数
-const showProblem2 = false
+const showProblem2 = true
 
 const problems = [
   {
@@ -118,12 +116,12 @@ const problems = [
     totalImages: 9
   },
   ...(showProblem2 ? [{
-    prompt: '1はどれか？',
-    instruction: '数字の1を含む画像をすべてクリックしてください②',
+    prompt: '答えが必ず０になる問題はどれ？',
+    instruction: '該当するものをすべて選んでください（∏は総積記号）',
     basePath: '/images/problem2',
     correctImages: correctImages2,
     wrongImages: wrongImages2,
-    correctCount: { min: 2, max: 5 },
+    correctCount: { min: 4, max: 6 },
     totalImages: 9
   }] : [])
 ]
@@ -479,7 +477,7 @@ const resetCaptcha = () => {
 
 .challenge-instruction p {
   margin: 0;
-  font-size: clamp(13px, 3vw, 14px);
+  font-size: clamp(13px, 3vw, 15px);
   color: #666;
   line-height: 1.5;
 }
@@ -610,12 +608,35 @@ const resetCaptcha = () => {
 /* Success Section */
 .success-section {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-end;
+  justify-content: flex-end;
   gap: 2vh;
-  padding: 4vh;
-  min-height: 25vh;
+  padding: 4vh 4vh 4vh 4vh;
+  min-height: 80vh;
+  width: 85%;
+  max-width: 500px;
   flex-direction: column;
+  background: url('/images/1778469185458.jpg') center / contain no-repeat;
+  background-color: white;
+  border-radius: 2px;
+  position: relative;
+}
+
+.success-overlay-text {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  pointer-events: none;
+  padding: 2vh;
+  word-break: break-word;
+  font-size: clamp(14px, 5vw, 20px);
+  font-weight:bold
 }
 
 .success-icon {
@@ -641,6 +662,28 @@ const resetCaptcha = () => {
   font-size: clamp(11px, 2vw, 13px);
   color: #5e5e5e;
   line-height: 1.5;
+}
+
+.btn-back {
+  margin-top: 160% !important;
+  padding: 0 clamp(16px, 3vw, 24px);
+  border: 1px solid #d3d3d3;
+  border-radius: 7px;
+  font-size: clamp(12px, 2vw, 14px);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: white;
+  color: #1f8fe8;
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 /* Footer */
